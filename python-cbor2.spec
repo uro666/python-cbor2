@@ -10,14 +10,18 @@ License:	MIT
 Group:		Development/Python
 BuildSystem:	python
 
+BuildRequires:	glibc-devel
 BuildRequires:	python
 BuildRequires:	pkgconfig(python3)
+BuildRequires:	python-cython
+BuildRequires:	python-coverage
 BuildRequires:	python-hypothesis
+BuildRequires:	python-mypy
 BuildRequires:	python-pip
+BuildRequires:	python-pytest
 BuildRequires:	python-setuptools
 BuildRequires:	python-setuptools_scm
 BuildRequires:	python-wheel
-BuildRequires:	python-pytest
 
 %description
 This library provides encoding and decoding for the Concise Binary Object
