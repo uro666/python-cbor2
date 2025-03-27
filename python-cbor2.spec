@@ -13,14 +13,13 @@ BuildSystem:	python
 BuildRequires:	glibc-devel
 BuildRequires:	python
 BuildRequires:	pkgconfig(python3)
-BuildRequires:	python-cython
-BuildRequires:	python-coverage
 BuildRequires:	python-hypothesis
-BuildRequires:	python-mypy
 BuildRequires:	python-pip
+BuildRequires:	python-py
 BuildRequires:	python-pytest
 BuildRequires:	python-setuptools
 BuildRequires:	python-setuptools_scm
+BuildRequires:	python-tomli
 BuildRequires:	python-wheel
 
 %description
@@ -35,6 +34,7 @@ It is implemented in pure python with an optional C backend.
 
 %prep
 %autosetup -p1 -n %{module}-%{version}
+sed -i 's/--cov//' pyproject.toml
 
 %build
 export LDFLAGS="%{optflags}"
@@ -43,6 +43,9 @@ export CBOR2_BUILD_C_EXTENSION=1
 
 %install
 %py3_install
+
+#check
+#pytest tests/
 
 %files
 %{_bindir}/%{module}
