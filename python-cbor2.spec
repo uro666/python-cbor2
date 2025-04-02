@@ -13,7 +13,6 @@ License:	MIT
 Group:		Development/Python
 BuildSystem:	python
 
-
 BuildRequires:	pkgconfig(pybind11)
 BuildRequires:	pkgconfig(python-%{pyver})
 BuildRequires:	python%{pyver}dist(pip)
