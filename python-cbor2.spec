@@ -1,4 +1,7 @@
+%define debug_package %{nil}
 %define module cbor2
+# tests disabled for abf
+%bcond_without test
 
 Name:		python-cbor2
 Version:	5.6.5
@@ -10,17 +13,27 @@ License:	MIT
 Group:		Development/Python
 BuildSystem:	python
 
-BuildRequires:	glibc-devel
-BuildRequires:	python
-BuildRequires:	pkgconfig(python3)
-BuildRequires:	python-hypothesis
-BuildRequires:	python-pip
-BuildRequires:	python-py
-BuildRequires:	python-pytest
-BuildRequires:	python-setuptools
-BuildRequires:	python-setuptools_scm
-BuildRequires:	python-tomli
-BuildRequires:	python-wheel
+
+BuildRequires:	pkgconfig(pybind11)
+BuildRequires:	pkgconfig(python-%{pyver})
+BuildRequires:	python%{pyver}dist(pip)
+BuildRequires:	python%{pyver}dist(setuptools)
+BuildRequires:	python%{pyver}dist(setuptools-scm)
+BuildRequires:	python%{pyver}dist(wheel)
+# for libcbor
+BuildRequires:	pkgconfig(libcbor)
+BuildRequires:	pkgconfig(libcjson)
+# for tests
+%if %{with test}
+BuildRequires:	python%{pyver}dist(attrs)
+BuildRequires:	python%{pyver}dist(pytest)
+BuildRequires:	python%{pyver}dist(coverage)
+BuildRequires:	python%{pyver}dist(hypothesis)
+BuildRequires:	python%{pyver}dist(iniconfig)
+BuildRequires:	python%{pyver}dist(packaging)
+BuildRequires:	python%{pyver}dist(pluggy)
+BuildRequires:	python%{pyver}dist(sortedcontainers)
+%endif
 
 %description
 This library provides encoding and decoding for the Concise Binary Object
@@ -32,25 +45,32 @@ Read the docs to learn more.
 
 It is implemented in pure python with an optional C backend.
 
+##################################
+
 %prep
 %autosetup -p1 -n %{module}-%{version}
-sed -i 's/--cov//' pyproject.toml
+# remove git badge URLs from README.rst
+sed -i '1,13d' README.rst
 
 %build
-export LDFLAGS="%{optflags}"
-export CBOR2_BUILD_C_EXTENSION=1
+export CFLAGS="%{optflags}"
+export LDFLAGS="%{ldflags} -v"
+# dont build cbor2 extension, use system library package libcbor
+export CBOR2_BUILD_C_EXTENSION=0
 %py_build
 
 %install
 %py3_install
 
-#check
-#pytest tests/
+%if %{with test}
+%check
+pip install -e .[test]
+%{__python} -m pytest -v tests/
+%endif
 
 %files
 %{_bindir}/%{module}
-%{python3_sitearch}/*.so
-%{python3_sitearch}/%{module}
-%{python3_sitearch}/%{module}-*.*-info
+%{python3_sitelib}/%{module}/
+%{python3_sitelib}/%{module}*.*-info/
 %doc README.rst
 %license LICENSE.txt
