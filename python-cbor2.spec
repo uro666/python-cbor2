@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 %define module cbor2
 # tests disabled for abf
-%bcond_without test
+%bcond_with test
 
 Name:		python-cbor2
 Version:	5.6.5
